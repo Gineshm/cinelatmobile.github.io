@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CINE LAT</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+        }
+
+        .hero-image {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+        }
+
+        .hero-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-content {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            max-width: 90%;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            z-index: 1;
+        }
+
+        .hero-content h1 {
+            font-size: 2em;
+            margin: 0;
+        }
+
+        .hero-content p {
+            font-size: 1em;
+            margin: 10px 0;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .button {
+            padding: 10px 15px;
+            font-size: 0.9em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, transform 0.3s;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .button-white {
+            background-color: #fff;
+            color: #000;
+        }
+
+        .button-white:hover {
+            background-color: #ddd;
+            transform: scale(1.05);
+        }
+
+        .button-red {
+            background-color: red;
+            color: #fff;
+        }
+
+        .button-gray {
+            background-color: #555;
+            color: #fff;
+        }
+
+        .button-gray:hover {
+            background-color: #777;
+            transform: scale(1.05);
+        }
+
+        .most-viewed, .new-movies {
+            position: relative;
+            padding: 20px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            top: -25px;
+        }
+
+        .more-links-container {
+            display: flex;
+            gap: 20px; /* Espacio entre los enlaces */
+        }
+
+        .more-link {
+            font-size: 1.5em;
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .more-link:hover {
+            color: #ddd;
+        }
+
+        .carousel {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            padding: 10px 0;
+            margin-top: -50px;
+        }
+
+        .carousel-inner {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .image-box {
+            min-width: 150px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            position: relative;
+            cursor: pointer;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        .image-box img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .image-box:hover img {
+            transform: scale(1.1);
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+
+        footer {
+            background-color: #000;
+            color: #777;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-image {
+                height: 200px;
+            }
+
+            .hero-content h1 {
+                font-size: 1.5em;
+            }
+
+            .image-box {
+                height: 100px;
+            }
+        }
+
+        .new-movies-carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 10px;
+            padding: 20px;
+            margin-top: -65px;
+            margin-left: 20px;
+        }
+
+        .new-movies-carousel a {
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .new-movies-carousel a:hover img {
+            transform: scale(1.1);
+        }
+
+        .new-movies-carousel img {
+            width: 225px;
+            height: 125px;
+            border-radius: 15px;
+            scroll-snap-align: start;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .genre-section {
+            padding: 20px;
+            color: #fff;
+        }
+
+        .genre-category {
+            margin-bottom: 30px;
+            position: relative; /* Añadido para posicionamiento */
+        }
+
+        .genre-category h3 {
+            font-size: 1.5em;
+            margin-bottom: 1x;
+        }
+
+        .genre-carousel {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+        }
+
+        .genre-carousel a {
+            display: inline-block;
+        }
+
+        .genre-carousel img {
+            width: 130px;
+            height: 180px;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .genre-carousel img:hover {
+            transform: scale(1.05);
+        }
+
+        .genre-more-link {
+            position: absolute; /* Posicionamiento absoluto */
+            top: 10px; /* Ajusta según sea necesario */
+            right: 10px; /* Ajusta según sea necesario */
+            font-size: 1em;
+            text-decoration: none;
+            color: #fff;
+            transition: color 0.3s;
+        }
+
+        .genre-more-link:hover {
+            color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-image" id="heroImage">
+        <div class="hero-content" id="heroContent">
+            <h1 id="title">Título del Anime</h1>
+            <p id="description">Sinopsis del anime que describe y captura la atención del espectador.</p>
+            <div class="button-container">
+                <a id="watchNowLink" href="#" class="button button-white" onclick="changeButtonColor(event)">
+                    <span class="icon">▶</span> Ver Ahora
+                </a>
+                <a href="https://www.ejemplo.com/mas-informacion" class="button button-gray">
+                    <span class="icon">ℹ</span> Más Información
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="most-viewed">
+        <h2>Lo más visto de este mes</h2>
+        <div class="more-links-container">
+            <a href="https://www.ejemplo.com/ver-mas" class="more-link">Ver Más ➡</a>
+        </div>
+    </div>
+
+    <div class="carousel" id="carousel">
+        <div class="carousel-inner" id="carouselInner">
+            <div class="image-box" onclick="showOverlay(this, 'https://cinelat.github.io/dragon_ball:_daima.html')">
+                <img src="https://i.ibb.co/9cxDSLs/221-sin-t-tulo-20241018220952.png" alt="Portada Anime 1" loading="lazy">
+                <div class="overlay">
+                    <a href="https://cinelat.github.io/dragon_ball:_daima.html" class="button button-white" onclick="changeButtonColor(event)">Ver Ahora</a>
+                </div>
+            </div>
+            <div class="image-box" onclick="showOverlay(this, 'https://cinelat.github.io/Robot_salvaje.html')">
+                <img src="https://i.ibb.co/zJXB4zc/221-sin-t-tulo-20241018222950.png" alt="Portada Anime 2" loading="lazy">
+                <div class="overlay">
+                    <a href="https://www.ejemplo.com/ver-ahora-anime2" class="button button-white" onclick="changeButtonColor(event)">Ver Ahora</a>
+                </div>
+            </div>
+            <div class="image-box" onclick="showOverlay(this, 'https://www.ejemplo.com/ver-ahora-anime3')">
+                <img src="https://i.ibb.co/p6FDpWF/221-sin-t-tulo-20241018223111.png" alt="Portada Anime 3" loading="lazy">
+                <div class="overlay">
+                    <a href="https://www.ejemplo.com/ver-ahora-anime3" class="button button-white" onclick="changeButtonColor(event)">Ver Ahora</a>
+                </div>
+            </div>
+            <div class="image-box" onclick="showOverlay(this, 'https://www.ejemplo.com/ver-ahora-anime4')">
+                <img src="https://i.ibb.co/QdcVrGr/221-sin-t-tulo-20241018223230.png" alt="Portada Anime 4" loading="lazy">
+                <div class="overlay">
+                    <a href="https://www.ejemplo.com/ver-ahora-anime4" class="button button-white" onclick="changeButtonColor(event)">Ver Ahora</a>
+                </div>
+            </div>
+            <div class="image-box" onclick="showOverlay(this, 'https://www.ejemplo.com/ver-ahora-anime5')">
+                <img src="https://i.ibb.co/NWqDCtP/221-sin-t-tulo-20241018223602.png" alt="Portada Anime 5" loading="lazy">
+                <div class="overlay">
+                    <a href="https://www.ejemplo.com/ver-ahora-anime5" class="button button-white" onclick="changeButtonColor(event)">Ver Ahora</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="new-movies">
+        <h2>Últimos Estrenos 2024</h2>
+        <div class="more-links-container">
+            <a href="https://www.ejemplo.com/ver-mas-nuevos" class="more-link">Ver Más ➡</a>
+        </div>
+    </div>
+
+    <div class="new-movies-carousel">
+        <a href="https://cinelat.github.io/Robot_salvaje.html"><img src="https://i.ytimg.com/vi/UPgUIORqja4/maxresdefault.jpg" alt="Estreno 1" loading="lazy"></a>
+        <a href="https://cinelat.github.io/El_Hoyo_2.html"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXbe5J8ppIk5TK1krvBwGETwRWL5Ct-U1OBw&usqp=CAU" alt="Estreno 2" loading="lazy"></a>
+        <a href="https://www.ejemplo.com/estreno3"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZZSQLPX9KxvWX0HG7RV_1Smgrlb3MwdHekw&usqp=CAU" alt="Estreno 3" loading="lazy"></a>
+        <a href="https://www.ejemplo.com/terror3"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShnv_Mk-Wa_ZHUWttK4Ff9u1NzBzhAI50uSg&usqp=CAU" alt="Terror 3" loading="lazy"></a>
+    </div>
+
+    <div class="genre-section">
+        <div class="genre-category">
+            <h3>Terror</h3>
+            <div>
+                <a href="https://www.ejemplo.com/terror" class="genre-more-link">Ver Más ➡</a>
+            </div>
+            <div class="genre-carousel">
+                <a href="https://www.ejemplo.com/terror1"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTx9_v-gS1ZLv8F4NFlXfmhDK5RPzq2eEWyRO-jT2Cp9itpLJikNW2hJIE&s=10" alt="Terror 1" loading="lazy"></a>
+                <a href="https://www.ejemplo.com/terror2"><img src="https://pics.filmaffinity.com/Terrifier_3-141451507-large.jpg" alt="Terror 2" loading="lazy"></a>
+                <a href="https://www.ejemplo.com/terror3"><img src="https://es.web.img3.acsta.net/pictures/24/03/12/17/06/1995303.jpg" alt="Terror 3" loading="lazy"></a>
+                <a href="https://www.ejemplo.com/terror3"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8sViQJTzWZkdDXAdgufOEmBRGpkPoOsXNzhBN-683502yWCHveSCn0YBS&s=10" alt="Terror 3" loading="lazy"></a>
+            </div>
+        </div>
+
+        <div class="genre-category">
+            <h3>Acción</h3>
+            <div>
+                <a href="https://www.ejemplo.com/accion" class="genre-more-link">Ver Más ➡</a>
+            </div>
+            <div class="genre-carousel">
+                <a href="https://www.ejemplo.com/accion1"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6D2UhkrOFvcRlfHwcb5WA3HUVfa83BTFdHyJSfLm1mYY5DN6ZTY91kyH-&s=10" alt="Acción 1" loading="lazy"></a>
+                <a href="https://www.ejemplo.com/accion2"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQcNavcuvAX1YlKhvu1m-bEEJRxeH7dYVVT2_1U4EuxOM8WpsLSW-vrTDX&s=10" alt="Acción 2" loading="lazy"></a>
+                <a href="https://www.ejemplo.com/accion3"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHnhLTIeMrWN7aBelcY1OGYMm8aBHVUgQC6g&usqp=CAU" alt="Acción 3" loading="lazy"></a>
+            </div>
+        </div>
+
+        <div class="genre-category">
+            <h3>Doramas</h3>
+            <div>
+                <a href="https://www.ejemplo.com/dorama" class="genre-more-link">Ver Más ➡</a>
+            </div>
+            <div class="genre-carousel">
+                <a href="https://www.ejemplo.com/dorama1"><img src="https://via.placeholder.com/150x230?text=Dorama+1" alt="Dorama 1" loading="lazy"></a>
+                <a href="https://www.ejemplo.com/dorama2"><img src="https://via.placeholder.com/150x230?text=Dorama+2" alt="Dorama 2" loading="lazy"></a>
+                <a href="https://www.ejemplo.com/dorama3"><img src="https://via.placeholder.com/150x230?text=Dorama+3" alt="Dorama 3" loading="lazy"></a>
+            </div>
+        </div>
+
+        <div class="genre-category">
+            <h3>Animación</h3>
+            <div>
+                <a href="https://www.ejemplo.com/animacion" class="genre-more-link">Ver Más ➡</a>
+            </div>
+            <div class="genre-carousel">
+                <a href="https://www.ejemplo.com/animacion1"><img src="https://via.placeholder.com/150x230?text=Animaci%C3%B3n+1" alt="Animación 1" loading="lazy"></a>
+                <a href="https://www.ejemplo.com/animacion2"><img src="https://via.placeholder.com/150x230?text=Animaci%C3%B3n+2" alt="Animación 2" loading="lazy"></a>
+                <a href="https://www.ejemplo.com/animacion3"><img src="https://via.placeholder.com/150x230?text=Animaci%C3%B3n+3" alt="Animación 3" loading="lazy"></a>
+            </div>
+        </div>
+
+        <div class="genre-category">
+            <h3>Comedia</h3>
+            <div>
+                <a href="https://www.ejemplo.com/comedia" class="genre-more-link">Ver Más ➡</a>
+            </div>
+            <div class="genre-carousel">
+                <a href="https://www.ejemplo.com/comedia1"><img src="https://via.placeholder.com/150x230?text=Comedia+1" alt="Comedia 1" loading="lazy"></a>
+                <a href="https://www.ejemplo.com/comedia2"><img src="https://via.placeholder.com/150x230?text=Comedia+2" alt="Comedia 2" loading="lazy"></a>
+                <a href="https://www.ejemplo.com/comedia3"><img src="https://via.placeholder.com/150x230?text=Comedia+3" alt="Comedia 3" loading="lazy"></a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentIndex = 0;
+        const totalImages = document.querySelectorAll('.carousel-inner .image-box').length;
+
+        function moveCarousel(direction) {
+            if (direction === 1 && currentIndex < 2) {
+                currentIndex++;
+            } else if (direction === 1 && currentIndex >= 2) {
+                currentIndex = 0;
+            } else if (direction === -1 && currentIndex > 0) {
+                currentIndex--;
+            }
+
+            const offset = -currentIndex * (150 + 10);
+            document.getElementById('carouselInner').style.transform = `translateX(${offset}px)`;
+        }
+
+        let startX;
+        let endX;
+
+        const carousel = document.getElementById('carousel');
+        carousel.addEventListener('touchstart', function (e) {
+            startX = e.touches[0].clientX;
+        });
+
+        carousel.addEventListener('touchmove', function (e) {
+            endX = e.touches[0].clientX;
+        });
+
+        carousel.addEventListener('touchend', function () {
+            if (startX > endX + 50) {
+                moveCarousel(1);
+            } else if (startX < endX - 50) {
+                moveCarousel(-1);
+            }
+        });
+
+        setInterval(function() {
+            moveCarousel(1);
+        }, 5000);
+
+        const images = [
+            {
+                url: 'https://occ-0-8407-2219.1.nflxso.net/dnm/api/v6/E8vDc_W8CLv7-yMQu8KMEC7Rrr8/AAAABYM9KvP-bpz9dnTQP1O7OhpXl-Vs21ImIUtsfrrwF34WX36c4S7ceysPRTiFe4MamL8AKhiCvsPsS_ON75eGeuJfhSEmUp4l6bM0.jpg?r=0e5',
+                title: 'ONE PUCH MAN: UN SOLO GOLPE',
+                description: 'Saitama y su aprendiz Genos se enteran de que el mundo corre peligro. El responsable de todo podría ser Garou, el villano misterioso.',
+                watchUrl: 'https://www.ejemplo.com/ver-ahora-anime1'
+            },
+            {
+                url: 'https://a.storyblok.com/f/178900/1920x1008/0334180e36/dragon-ball-daima-key-visual-wide.png/m/1200x0/filters:quality(95)format(webp)',
+                title: 'DRAGON BALL: DAIMA',
+                description: '“Dragon Ball: Daima” se centra en Gokú y sus amigos. Tras una conspiración, ellos son convertidos en niños. Entonces, para arreglar las cosas, planean dirigirse a un nuevo mundo.',
+                watchUrl: 'https://cinelat.github.io/daima.html'
+            },
+            {
+                url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBP1Vj729OVu8SlIlURaqpjt9_fIIYQBY-Uw&usqp=CAU',
+                title: 'DEMON SLAYER T4: EXTREMO',
+                description: 'En este nuevo arco, los miembros del Cuerpo de Cazadores de Demonios y sus espadachines más destacados, los Hashira, se preparan para la batalla final contra Muzan Kibutsuji. Mientras cada uno carga con fe y determinación en sus corazones, Tanjiro y los Hashira se adentran en una historia llena de desafíos y peligros.',
+                watchUrl: 'https://www.ejemplo.com/ver-ahora-anime3'
+            },
+            {
+                url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8T7ONCl4eve4XZQKihztvV0L_F0pKIMpFtQ&usqp=CAU',
+                title: 'JUJUTSU KAISEN T2',
+                description: 'Satoru Gojo y Suguru Geto no siempre fueron enemigos. Mucho antes de lo que se suponía que iba a ser su encuentro final durante el Desfile Nocturno de los Cien Demonios, ambos eran compañeros de estudios, rivales y amigos.',
+                watchUrl: 'https://www.ejemplo.com/ver-ahora-anime4'
+            },
+            {
+                url: 'https://i.ytimg.com/vi/UPgUIORqja4/maxresdefault.jpg',
+                title: 'ROBOT SALVAJE: PELÍCULA',
+                description: 'Esta aventura épica cuenta la historia de una robot, Rozzum 7-1-3-4, "Roz" para abreviar, que naufraga en una isla inhabitada y debe aprender a adaptarse a los entornos rigurosos construyendo relaciones con los animales de la isla y convirtiéndose en la madre adoptiva de una cría de ganso huérfana.',
+                watchUrl: 'https://cinelat.github.io/Robot_salvaje.html'
+            }
+        ];
+
+        function getRandomIndex() {
+            return Math.floor(Math.random() * images.length);
+        }
+
+        function updateHeroContent() {
+            const heroImage = document.getElementById('heroImage');
+            const title = document.getElementById('title');
+            const description = document.getElementById('description');
+            const watchNowLink = document.getElementById('watchNowLink');
+
+            const randomIndex = getRandomIndex();
+
+            heroImage.style.backgroundImage = `url('${images[randomIndex].url}')`;
+            title.textContent = images[randomIndex].title;
+            description.textContent = images[randomIndex].description;
+            watchNowLink.href = images[randomIndex].watchUrl;
+        }
+
+        function showOverlay(box, url) {
+            const overlays = document.querySelectorAll('.overlay');
+            overlays.forEach(overlay => {
+                overlay.style.display = 'none';
+            });
+            const overlay = box.querySelector('.overlay');
+            overlay.style.display = 'flex';
+            overlay.querySelector('a').href = url;
+        }
+
+        function changeButtonColor(event) {
+            event.stopPropagation();
+            const button = event.currentTarget;
+            button.classList.remove('button-white');
+            button.classList.add('button-red');
+        }
+
+        updateHeroContent();
+    </script>
+</body>
+</html>
