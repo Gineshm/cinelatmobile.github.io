@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cine Lat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpK9PXc_Vpo6Iwz1OkhQ4xrEzWTcYMCtqvmQ&usqp=CAU'); /* URL de la imagen de fondo */
+            background-size: cover;
+            background-position: center;
+            background-blend-mode: darken;
+            background-color: rgba(0, 0, 0, 0.7); /* Oscurece la imagen de fondo */
+            color: #fff;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: row;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.9);
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .cover {
+            flex: 1;
+            max-width: 150px;
+            margin-right: 20px;
+        }
+        .cover img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+        }
+        .info-section {
+            flex: 2;
+            text-align: left;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #e50914;
+        }
+        .metadata, .synopsis, .rating, .genre {
+            font-size: 16px;
+            color: #bbb;
+            margin-bottom: 15px;
+        }
+        .rating {
+            display: flex;
+            align-items: center;
+        }
+        .rating span {
+            color: gold;
+            font-size: 20px;
+            margin-right: 5px;
+        }
+        .rating .score {
+            font-size: 18px;
+            color: #fff;
+            margin-left: 10px;
+        }
+        .genre {
+            font-style: italic;
+            color: #e50914;
+        }
+        .fullscreen-button, .video-fullscreen-button {
+            background-color: transparent;
+            border: 2px solid #e50914;
+            color: #e50914;
+            padding: 4px 8px; /* Tamaño reducido del botón */
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, transform 0.3s;
+            margin-top: 10px;
+            font-size: 12px; /* Tamaño de fuente reducido */
+        }
+        .fullscreen-button:hover, .video-fullscreen-button:hover {
+            background-color: #e50914;
+            color: white;
+            transform: scale(1.1);
+        }
+        .video-section {
+            width: 100%;
+            max-width: 800px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.9);
+            margin-top: 20px;
+            position: relative;
+        }
+        .video-section iframe {
+            width: 100%;
+            height: 450px;
+            border: none;
+        }
+        .video-fullscreen-button {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+        .play-button {
+            width: 100px;  /* Ajusta el ancho para acomodar el texto */
+            height: 60px;
+            background-color: #e50914;
+            border-radius: 30px;  /* Hace los bordes más redondeados */
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: absolute;
+            right: 150px;
+            top: 30%;
+            transform: translateY(-50%);
+            z-index: 10;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            animation: pulse 2s infinite; /* Animación infinita */
+        }
+        .video-logo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 100px;
+            height: auto;
+            z-index: 15;
+            pointer-events: none;
+        }
+
+        /* Definición de la animación */
+        @keyframes pulse {
+            0% {
+                transform: translateY(-50%) scale(1);
+            }
+            50% {
+                transform: translateY(-50%) scale(1.1);
+            }
+            100% {
+                transform: translateY(-50%) scale(1);
+            }
+        }
+
+        @media (orientation: landscape) {
+            .play-button {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="cover">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7jSEtVgp_GxhViO4Lngdxk_-iEze1m7Be-UXsxtbdYvo2u2K67XKuv-4&s=10" alt="Portada de la serie">
+    </div>
+    <div class="info-section">
+        <div class="title">BLUE LOCK: EPISODE NAGI</div>
+        <div class="metadata">PELICULA | 2024</div>
+        <div class="rating">
+            <span>⭐</span>
+            <span>⭐</span>
+            <span>⭐</span>
+            <span>⭐</span>
+            <span>☆</span>
+            <div class="score">(8.0)</div>
+            <div class="play-button" onclick="scrollToBottom()">
+                Al vídeo
+            </div>
+        </div>
+        <div class="genre">Género: Anime, Drama, Acción</div>
+        <div class="synopsis">
+            Película spin-off de la serie anime 'Blue Lock'. 'Qué fastidio', esa era la frase favorita de Nagi Seishiro, estudiante de segundo año de preparatoria, en su día a día. Eso fue hasta que Mikage Reo, un compañero que soñaba con ganar la Copa del Mundo, descubrió la habilidad oculta de Nagi y le animó a jugar al fútbol y compartir su extraordinario talento. Un día recibe una invitación para el misterioso Proyecto 'Blue Lock'. Allí se encuentra con los mejores delanteros del país. El sueño de Nagi de convertirse en el mejor junto a Reo le llevará a un mundo desconocido. Un prodigio sólo puede formarse cuando alguien lo descubre... ahora, el increíble talento y la personalidad del delantero Nagi Seishiro revolucionarán el mundo del fútbol. 
+        </div>
+        <button class="fullscreen-button" onclick="toggleFullScreen()">Pantalla Completa</button>
+    </div>
+</div>
+
+<div id="video-section" class="video-section">
+    <div class="video-overlay">
+        <img src="https://i.ibb.co/K23Z06f/INE-AT-20241109-091613-0000-removebg-preview.png" alt="Logo" class="video-logo">
+    </div>
+    <iframe id="videoFrame" src="https://unlimplay.com/embed/?NWRkM3ZDbFc5ZjdJTW40eWZGR2c5SGR0MU9GSlRMWFNZWkdVYjVodGtQaXhVaFRROVVNRWpRbVBReWcwQXNLOFpDaFAyejQrLzVDYW5CRXBFL21xOHpyNzdaUXRTU1JuL0ZBSzlRMDBlK3liWnREVjlBTHJoNUhoSGNEeTE1dUo" allowfullscreen title="Video de Cine Lat"></iframe>
+    <button class="video-fullscreen-button" onclick="toggleVideoFullScreen()">Pantalla Completa</button>
+</div>
+
+<script>
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+    
+    function toggleVideoFullScreen() {
+        var iframe = document.getElementById('videoFrame');
+        var logo = document.querySelector('.video-overlay');
+        if (!document.fullscreenElement) {
+            if (iframe.requestFullscreen) {
+                iframe.requestFullscreen();
+            } else if (iframe.mozRequestFullScreen) { // Firefox
+                iframe.mozRequestFullScreen();
+            } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari y Opera
+                iframe.webkitRequestFullscreen();
+            } else if (iframe.msRequestFullscreen) { // IE/Edge
+                iframe.msRequestFullscreen();
+            }
+            logo.style.display = 'block'; // Asegura que el logo esté visible
+        }
+    }
+
+    function scrollToBottom() {
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+</script>
+
+</body>
+</html
