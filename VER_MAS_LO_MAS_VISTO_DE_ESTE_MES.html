@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flus Plus</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+        .movie-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .movie {
+            width: 120px; /* Ancho de cada película */
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+        .movie.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .movie img {
+            width: 100%;
+            height: 180px; /* Altura ajustada */
+            object-fit: cover;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .movie img:hover {
+            transform: scale(1.05) translateY(-5px);
+        }
+        .no-results {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #loadMore {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #e50914;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        #loadMore:hover {
+            background-color: #c50712;
+            transform: scale(1.05);
+        }
+        .alert {
+            display: none;
+            background-color: #444;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Lo mas visto de este mes</h1>
+
+<div class="movie-container" id="movieContainer">
+    <!-- Las películas se agregarán aquí -->
+</div>
+
+<div class="no-results" id="noResults" style="display: none;">No se encontraron películas.</div>
+
+<button id="loadMore">Cargar más</button>
+
+<div class="alert" id="alert">¡Cargando más películas!</div>
+
+<script>
+    const movieContainer = document.getElementById("movieContainer");
+    const noResults = document.getElementById("noResults");
+    const loadMoreButton = document.getElementById("loadMore");
+    const alertBox = document.getElementById("alert");
+
+    let movies = [
+        { title: "Dragon Ball Super: Super Hero", url: "https://www.example.com/inception", image: "https://es.web.img3.acsta.net/pictures/22/07/06/14/16/5147637.jpg" },
+        { title: "Venom 3: EL Ultimo Baile", url: "https://gineshm.github.io/cinelattv.github.io/VENOM_3_EL_ULTIMO_BAILE.html", image: "https://s1.ppllstatics.com/diariosur/www/multimedia/2024/10/25/pelicula-fotograma-3938-mini.jpg" },
+        { title: "Los 7 Pecados Capitales: Película 2018", url: "https://gineshm.github.io/cinelattv.github.io/LOS_7_PECADOS_PELICULA_2018.html", image: "https://www.lavanguardia.com/peliculas-series/images/movie/poster/2018/8/w1280/b53udDM3OefpABNIOv32XlFjMGG.jpg" },
+        { title: "Mi Villano Favorito 4: GRU4", url: "https://gineshm.github.io/cinelattv.github.io/MI_VILLANO_FAVORITO_4.html", image: "https://www.universalpictures.es/tl_files/content/movies/despicable_me_4/posters/02.jpg" },
+        { title: "Jujutsu Kaisen: Película", url: "https://www.example.com/avatar", image: "https://es.web.img3.acsta.net/pictures/22/05/18/16/23/5993750.jpg" },
+        { title: "Kung Fu Panda 4", url: "https://gineshm.github.io/cinelattv.github.io/KUNG_FU_PANDA_4.html", image: "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSrakPTsqdEOxYzMjxiAu2V8Lb_MV8luTzwiGTuyhzcnUdL5m5Pn8P0QUvDsOqSol-i27-eSg" },
+        { title: "Dragon Ball: La Batalla De Los Dioses", url: "https://www.example.com/shawshank", image: "https://es.web.img3.acsta.net/pictures/14/03/13/09/32/445665.jpg" },
+        { title: "Demon Slayer: Tren Infinito", url: "https://gineshm.github.io/cinelattv.github.io/DEMON_SLAYER:TREN_INFINITO.html", image: "https://i.ibb.co/prjKHF5/Kimetsu-no-Yaiba-Season-tren-infinito.webp" },
+        { title: "Deja El Mundo Atrás", url: "https://cinelat.github.io/deja_el_mundo_atras.html", image: "https://es.web.img2.acsta.net/pictures/23/10/24/23/54/2364476.jpg" },
+        { title: "Blue Lock: Película", url: "https://gineshm.github.io/cinelattv.github.io/BLUE_LOCK_EPISODE_NIGA_PELICULA.html", image: "https://es.web.img2.acsta.net/img/c9/bb/c9bbf815e0f2b6ece43c5ce235d5ef37.jpg" },
+        { title: "Dragon Ball: Daima", url: "https://gineshm.github.io/cinelattv.github.io/DRAGON_BALL:DAIMA.html", image: "https://en.dragon-ball-official.com/dragonball/en/news/2024/09/n240904000-02en.jpg" },
+        { title: "365 Dias", url: "https://gineshm.github.io/cinelattv.github.io/365_DIAS.html", image: "https://pics.filmaffinity.com/365_dni-992282930-mmed.jpg" },
+        { title: "Dias De Santiago", url: "https://gineshm.github.io/cinelattv.github.io/DIAS_DE_SANTIAGO.html", image: "https://www.retinalatina.org/wp-content/uploads/2016/08/po_diasdesantiago.jpg" },
+        { title: "Starship trooper 1", url: "https://gineshm.github.io/cinelattv.github.io/STARSHIP_TROOPER_1.html", image: "https://m.media-amazon.com/images/I/71hb4WtXvHL._AC_UF1000,1000_QL80_.jpg" },
+    ];
+
+    let currentPage = 0;
+    const moviesPerPage = 9; // Mostrar 9 películas por página
+
+    window.onload = function() {
+        loadMovies();
+        loadMoreButton.addEventListener('click', loadMoreMovies);
+    };
+
+    function loadMovies() {
+        if (currentPage * moviesPerPage >= movies.length) {
+            noResults.style.display = "block";
+            return;
+        }
+
+        showAlert("Cargando más películas...");
+        const start = currentPage * moviesPerPage;
+        const end = start + moviesPerPage;
+        const moviesToShow = movies.slice(start, end);
+
+        moviesToShow.forEach((movie) => {
+            addMovieToContainer(movie.title, movie.url, movie.image);
+        });
+
+        currentPage++;
+        if (currentPage * moviesPerPage >= movies.length) {
+            loadMoreButton.style.display = "none"; // Ocultar el botón si no hay más películas
+        } else {
+            loadMoreButton.style.display = "block"; // Mostrar el botón si hay más películas
+        }
+    }
+
+    function loadMoreMovies() {
+        loadMovies();
+    }
+
+    function addMovieToContainer(title, url, image) {
+        const movieDiv = document.createElement("div");
+        movieDiv.classList.add("movie");
+        movieDiv.innerHTML = `
+            <a href="${url}" target="_blank">
+                <img src="${image}" alt="${title}">
+            </a>
+            <p>${title}</p>
+        `;
+        movieContainer.appendChild(movieDiv);
+        setTimeout(() => {
+            movieDiv.classList.add("show");
+        }, 10);
+    }
+
+    function showAlert(message) {
+        alertBox.textContent = message;
+        alertBox.style.display = "block";
+        setTimeout(() => {
+            alertBox.style.display = "none";
+        }, 2000);
+    }
+</script>
+
+</body>
+</html>
