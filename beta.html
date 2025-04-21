@@ -1,4 +1,6 @@
-<html lang="es"><head>
+<!DOCTYPE html>
+<html lang="es">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reproductor de Video Profesional</title>
@@ -204,31 +206,31 @@
 </head>
 <body>
     <div id="videoContainer">
-        <video id="video" src="https://seed171.bitchute.com/MWp0QUjJylLP/e8wUnP61ZjIy.mp4"></video>
-        <div id="title" style="opacity: 1;">Eres Mi Estrella :(T1 - E1)</div>
-        <div id="centerControls" style="opacity: 1;">
+        <video id="video" src=""></video>
+        <div id="title">titulo de video</div>
+        <div id="centerControls">
             <button id="rewind"><i class="fas fa-undo"></i></button>
-            <button id="playPause"><i class="fas fa-pause"></i></button>
+            <button id="playPause"><i class="fas fa-play"></i></button>
             <button id="forward"><i class="fas fa-redo"></i></button>
         </div>
-        <div id="skipIntro" style="opacity: 1; display: none;">Saltar Intro</div>
-        <div class="progress-container" style="opacity: 1;">
-            <input type="range" id="progressBar" min="0" max="13.766667" value="0" style="opacity: 1;">
-            <div id="loadingBar" style="width: 100%;"></div>
-            <div id="topThumb" style="left: 100%;"></div>
+        <div id="skipIntro">Saltar Intro</div>
+        <div class="progress-container">
+            <input type="range" id="progressBar" min="0" max="0" value="0">
+            <div id="loadingBar"></div>
+            <div id="topThumb"></div>
         </div>
-        <div id="controls" style="opacity: 1;">
+        <div id="controls">
             <button id="mute"><i class="fas fa-volume-up"></i></button>
             <div id="timeDisplay">
-                <span id="currentTime">0:00:13</span> / <span id="duration">0:00:13</span>
+                <span id="currentTime">0:00:00</span> / <span id="duration">0:00:00</span>
             </div>
             <button id="fullscreen"><i class="fas fa-expand"></i></button>
         </div>
-        <div id="spinner" style="display: none;"><i class="fas fa-spinner fa-spin"></i>
-            <div id="spinnerText" style="display: none;">Cargando reproductor Nagi Plus</div>
+        <div id="spinner"><i class="fas fa-spinner fa-spin"></i>
+            <div id="spinnerText">Cargando reproductor Nagi Plus</div>
         </div>
     </div>
-    <script defer="">
+    <script defer>
         function getParameterByName(name) {
             const url = window.location.href;
             name = name.replace(/[\[\]]/g, '\\$&');
@@ -465,6 +467,5 @@
             return `${hrs}:${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
         }
     </script>
-
-
-</body></html>
+</body>
+</html>
