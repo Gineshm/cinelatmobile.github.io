@@ -1,0 +1,465 @@
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor de Video Estilo Netflix</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body, html {
+            background-color: #000;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #videoContainer {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            transition: opacity 0.3s;
+            opacity: 1; /* Inicialmente visible */
+        }
+
+        button {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.2);
+        }
+
+        .button-active {
+            color: #e50914; /* Rojo de Netflix */
+            transition: color 0.2s;
+        }
+
+        #centerControls {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            gap: 250px;
+            transition: opacity 0.3s;
+        }
+
+        #centerControls button {
+            font-size: 25px;
+        }
+
+        .progress-container {
+            width: 90%;
+            height: 5px;
+            background: #555;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        #loadingBar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: #e50914;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.1s;
+        }
+
+        #progressIndicator {
+            position: absolute;
+            top: -5px;
+            left: 0;
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            transition: left 0.1s;
+        }
+
+        #timeDisplay {
+            color: white;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        #spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px;
+            color: white;
+            display: none;
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        #title {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            color: white;
+            font-size: 20px;
+            z-index: 10;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            animation: fadeIn 3s ease-in-out;
+        }
+
+        #skipIntro {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50%; /* Ancho de la ventana modal */
+            height: 70%; /* Altura de la ventana modal */
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            color: white;
+            z-index: 1000;
+            overflow-y: auto;
+            transition: left 0.5s ease; /* Transición suave */
+        }
+
+        .modal.active {
+            left: 0; /* Mueve la modal a la vista */
+        }
+
+        .modal-header {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .modal-body {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* 5 columnas */
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .episode {
+            background: #333;
+            height: 100px; /* Hacer que los cuadros sean más pequeños */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+            color: white;
+            font-weight: bold;
+        }
+
+        .episode:hover {
+            background: #444;
+        }
+
+        .episode.active {
+            background: #e50914; /* Rojo de Netflix al seleccionar */
+        }
+
+        .modal-footer {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .modal-footer button {
+            background: #e50914;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Media Query */
+        @media (orientation: portrait) {
+            .control-buttons button[data-action="episodes"],
+            .control-buttons button[data-action="next"] {
+                display: none; /* Esconder botones en vertical */
+            }
+            .control-buttons button[data-action="cast"] {
+                display: none; /* Esconder el botón de TV en vertical */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="videoContainer">
+        <video id="video" src=""></video>
+        <div id="title">Título del Video</div>
+        <div id="skipIntro" data-action="skipIntro"><i class="fas fa-forward"></i> Saltar Intro</div>
+        <div id="centerControls">
+            <button data-action="rewind"><i class="fas fa-undo"></i></button>
+            <button id="playPause"><i class="fas fa-play"></i></button>
+            <button data-action="forward"><i class="fas fa-redo"></i></button>
+        </div>
+        <div id="controls">
+            <div class="progress-container">
+                <div id="loadingBar"></div>
+                <div id="progressIndicator"></div>
+            </div>
+            <div class="control-buttons">
+                <button data-action="subtitles"><i class="fas fa-closed-captioning"></i> Subtítulos</button>
+                <button data-action="next"><i class="fas fa-step-forward"></i> Siguiente</button>
+                <button data-action="cast"><i class="fas fa-tv"></i> TV</button>
+                <button data-action="fullscreen"><i class="fas fa-expand"></i> Pantalla Completa</button>
+            </div>
+            <div id="timeDisplay">
+                <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+            </div>
+        </div>
+        <div id="spinner"><i class="fas fa-spinner fa-spin"></i></div>
+    </div>
+
+    <!-- Modales -->
+    <div id="modal" class="modal">
+        <div class="modal-header">Episodios</div>
+        <div class="modal-body" id="modalBody">
+            <!-- Episodios generados dinámicamente -->
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeModal()">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const playPauseButton = document.getElementById('playPause');
+        const loadingBar = document.getElementById('loadingBar');
+        const progressContainer = document.querySelector('.progress-container');
+        const controls = document.getElementById('controls');
+        const centerControls = document.getElementById('centerControls');
+        const spinner = document.getElementById('spinner');
+        const currentTimeDisplay = document.getElementById('currentTime');
+        const durationDisplay = document.getElementById('duration');
+        const modal = document.getElementById('modal');
+        const modalBody = document.getElementById('modalBody');
+        const skipIntroButton = document.getElementById('skipIntro');
+        const progressIndicator = document.getElementById('progressIndicator');
+
+        let controlsVisible = true; // Inicialmente visible
+        let hideControlsTimeout;
+        const skipTime = 60; // Tiempo para saltar la intro en segundos
+
+        // Obtener parámetros de la URL
+        const params = new URLSearchParams(window.location.search);
+        const videoURL = params.get('link');
+        const videoTitle = params.get('title');
+        const skipTimeParam = params.get('skip') || skipTime; // Valor por defecto
+        const subtitlesURL = params.get('subtitles');
+
+        // Establecer la URL del video y título
+        video.src = videoURL; // Establecer la URL del video
+        document.getElementById('title').textContent = videoTitle; // Establecer el título
+
+        video.addEventListener('loadeddata', () => {
+            durationDisplay.textContent = formatTime(video.duration);
+        });
+
+        video.addEventListener('timeupdate', () => {
+            currentTimeDisplay.textContent = formatTime(video.currentTime);
+            const progressPercentage = (video.currentTime / video.duration) * 100;
+            loadingBar.style.width = progressPercentage + '%';
+            progressIndicator.style.left = progressPercentage + '%'; // Mueve el indicador
+        });
+
+        video.addEventListener('waiting', () => {
+            spinner.style.display = 'block';
+        });
+
+        video.addEventListener('playing', () => {
+            spinner.style.display = 'none';
+            centerControls.style.opacity = '0';
+        });
+
+        video.addEventListener('pause', () => {
+            centerControls.style.opacity = '1';
+        });
+
+        playPauseButton.addEventListener('click', togglePlayPause);
+
+        controls.addEventListener('click', (event) => {
+            if (controlsVisible) { // Solo si los controles son visibles
+                const button = event.target.closest('button');
+                if (button) {
+                    // Remover clase activa de todos los botones
+                    const allButtons = controls.querySelectorAll('button');
+                    allButtons.forEach(btn => btn.classList.remove('button-active'));
+                    
+                    // Agregar clase activa al botón presionado
+                    button.classList.add('button-active');
+                    
+                    const action = button.dataset.action;
+                    if (action) {
+                        handleControlAction(action);
+                    }
+                    resetHideControlsTimeout(); // Reiniciar temporizador al presionar un botón
+                }
+            }
+        });
+
+        skipIntroButton.addEventListener('click', () => {
+            video.currentTime = parseInt(skipTimeParam); // Usa el tiempo de saltar de los parámetros
+        });
+
+        progressContainer.addEventListener('click', (event) => {
+            const rect = progressContainer.getBoundingClientRect();
+            const pos = (event.clientX - rect.left) / rect.width;
+            video.currentTime = pos * video.duration;
+        });
+
+        videoContainer.addEventListener('click', (event) => {
+            if (!event.target.closest('button')) {
+                if (controlsVisible) {
+                    hideControls();
+                } else {
+                    showControls();
+                    resetHideControlsTimeout();
+                }
+            }
+        });
+
+        function togglePlayPause() {
+            if (video.paused) {
+                video.play();
+                playPauseButton.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                video.pause();
+                playPauseButton.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        }
+
+        function handleControlAction(action) {
+            switch (action) {
+                case 'rewind':
+                    video.currentTime = Math.max(0, video.currentTime - 10);
+                    break;
+                case 'forward':
+                    video.currentTime = Math.min(video.duration, video.currentTime + 10);
+                    break;
+                case 'subtitles':
+                    showModal('Configurar subtítulos');
+                    break;
+                case 'next':
+                    showModal('Ir al siguiente episodio');
+                    break;
+                case 'cast':
+                    showModal('Transmitir a TV');
+                    break;
+                case 'fullscreen':
+                    toggleFullScreen();
+                    break;
+            }
+        }
+
+        function showEpisodes() {
+            modalBody.innerHTML = '';
+            for (let i = 1; i <= 10; i++) {
+                const episode = document.createElement('div');
+                episode.className = 'episode';
+                episode.textContent = `Episodio ${i}`;
+                episode.addEventListener('click', () => {
+                    video.src = `${baseURL}video${i}.mp4`; // Cambia la URL del video al episodio seleccionado
+                    video.play(); // Reproduce el episodio
+                    closeModal(); // Cierra la modal
+                });
+                modalBody.appendChild(episode);
+            }
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                videoContainer.requestFullscreen();
+            } else if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+
+        function showControls() {
+            controls.style.opacity = '1';
+            centerControls.style.opacity = '1';
+            controlsVisible = true;
+        }
+
+        function hideControls() {
+            controls.style.opacity = '0';
+            centerControls.style.opacity = '0';
+            controlsVisible = false;
+        }
+
+        function resetHideControlsTimeout() {
+            clearTimeout(hideControlsTimeout);
+            hideControlsTimeout = setTimeout(hideControls, 3000);
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+    </script>
+</body>
+</html>
