@@ -70,7 +70,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             display: flex;
-            gap: 200px;
+            gap: 250px;
             transition: opacity 0.3s;
         }
 
@@ -229,6 +229,33 @@
             font-size: 16px;
         }
 
+        /* Estilo para las alertas avanzadas */
+        .alert-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            color: white;
+            z-index: 2000;
+            border-radius: 10px;
+        }
+
+        .alert-modal.active {
+            display: block;
+        }
+
+        .alert-modal button {
+            background: #e50914;
+            border: none;
+            padding: 10px;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
         /* Media Query */
         @media (orientation: portrait) {
             .control-buttons button[data-action="episodes"],
@@ -258,7 +285,7 @@
             </div>
             <div class="control-buttons">
                 <button data-action="subtitles"><i class="fas fa-closed-captioning"></i> Subtítulos</button>
-                <button data-action="next"><i class="fas fa-step-forward"></i> Siguiente</button>
+                <button data-action="lock"><i class="fas fa-lock"></i> Bloquear Controles</button>
                 <button data-action="cast"><i class="fas fa-tv"></i> TV</button>
                 <button data-action="fullscreen"><i class="fas fa-expand"></i> Pantalla Completa</button>
             </div>
@@ -280,6 +307,13 @@
         </div>
     </div>
 
+    <!-- Alertas avanzadas para subtítulos y TV -->
+    <div id="alertModal" class="alert-modal">
+        <div id="alertMessage"></div>
+        <button id="option1">Opción 1</button>
+        <button id="option2">Opción 2</button>
+    </div>
+
     <script>
         const video = document.getElementById('video');
         const playPauseButton = document.getElementById('playPause');
@@ -294,9 +328,14 @@
         const modalBody = document.getElementById('modalBody');
         const skipIntroButton = document.getElementById('skipIntro');
         const progressIndicator = document.getElementById('progressIndicator');
+        const alertModal = document.getElementById('alertModal');
+        const alertMessage = document.getElementById('alertMessage');
+        const option1 = document.getElementById('option1');
+        const option2 = document.getElementById('option2');
 
         let controlsVisible = true; // Inicialmente visible
         let hideControlsTimeout;
+        let controlsLocked = false; // Estado de bloqueo de controles
         const skipTime = 60; // Tiempo para saltar la intro en segundos
 
         // Obtener parámetros de la URL
@@ -354,7 +393,7 @@
         playPauseButton.addEventListener('click', togglePlayPause);
 
         controls.addEventListener('click', (event) => {
-            if (controlsVisible) { // Solo si los controles son visibles
+            if (controlsVisible && !controlsLocked) { // Solo si los controles son visibles y no están bloqueados
                 const button = event.target.closest('button');
                 if (button) {
                     // Remover clase activa de todos los botones
@@ -409,19 +448,56 @@
                     video.currentTime = Math.min(video.duration, video.currentTime + 10);
                     break;
                 case 'subtitles':
-                    showModal('Configurar subtítulos');
+                    showAlert('subtitles');
                     break;
                 case 'next':
-                    showModal('Ir al siguiente episodio');
+                    showAlert('next');
                     break;
                 case 'cast':
-                    showModal('Transmitir a TV');
+                    showAlert('cast');
                     break;
                 case 'fullscreen':
                     toggleFullScreen();
                     break;
+                case 'lock':
+                    toggleControlsLock();
+                    break;
             }
         }
+
+        function showAlert(type) {
+            switch (type) {
+                case 'subtitles':
+                    alertMessage.textContent = "Selecciona una opción para subtítulos:";
+                    option1.textContent = "Subtítulos Español";
+                    option2.textContent = "Subtítulos Inglés";
+                    break;
+                case 'next':
+                    alertMessage.textContent = "¿Quieres ir al siguiente episodio?";
+                    option1.textContent = "Sí";
+                    option2.textContent = "No";
+                    break;
+                case 'cast':
+                    alertMessage.textContent = "¿Quieres emitir a TV?";
+                    option1.textContent = "Sí";
+                    option2.textContent = "No";
+                    break;
+            }
+            alertModal.classList.add('active');
+        }
+
+        // Agregar lógica para los botones de alerta
+        option1.addEventListener('click', () => {
+            alertModal.classList.remove('active');
+            console.log("Opción 1 seleccionada");
+            // Implementar lógica para la opción 1 según el tipo
+        });
+
+        option2.addEventListener('click', () => {
+            alertModal.classList.remove('active');
+            console.log("Opción 2 seleccionada");
+            // Implementar lógica para la opción 2 según el tipo
+        });
 
         function closeModal() {
             modal.classList.remove('active');
