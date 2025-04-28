@@ -70,7 +70,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             display: flex;
-            gap: 250px;
+            gap: 200px;
             transition: opacity 0.3s;
         }
 
@@ -360,10 +360,10 @@
                     // Remover clase activa de todos los botones
                     const allButtons = controls.querySelectorAll('button');
                     allButtons.forEach(btn => btn.classList.remove('button-active'));
-
+                    
                     // Agregar clase activa al botón presionado
                     button.classList.add('button-active');
-
+                    
                     const action = button.dataset.action;
                     if (action) {
                         handleControlAction(action);
