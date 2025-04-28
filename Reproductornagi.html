@@ -71,7 +71,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             display: flex;
-            gap: 250px;
+            gap: 40px;
             transition: opacity 0.3s;
         }
 
@@ -303,12 +303,30 @@
         const params = new URLSearchParams(window.location.search);
         const videoURL = params.get('link');
         const videoTitle = params.get('title');
-        const skipTimeParam = params.get('skip') || skipTime; // Valor por defecto
+        const skipTimeParam = params.get('skip'); // Rango de tiempo para saltar
         const subtitlesURL = params.get('subtitles');
 
-        // Establecer la URL del video y título
+        // Establecer la URL del video y el título
         video.src = videoURL; // Establecer la URL del video
         document.getElementById('title').textContent = videoTitle; // Establecer el título
+
+        // Función para convertir tiempo "HH:MM:SS" a segundos
+        function timeToSeconds(time) {
+            const [hours, minutes, seconds] = time.split(':').map(Number);
+            return hours * 3600 + minutes * 60 + seconds;
+        }
+
+        // Establecer el tiempo de salto
+        skipIntroButton.addEventListener('click', () => {
+            if (skipTimeParam) {
+                const [start, end] = skipTimeParam.split('-');
+                const startTime = timeToSeconds(start);
+                const endTime = timeToSeconds(end);
+                // Establecer el tiempo actual en el video
+                video.currentTime = startTime; // Cambia el tiempo del video al inicio del rango
+                skipIntroButton.style.display = 'none'; // Ocultar el botón después de presionarlo
+            }
+        });
 
         video.addEventListener('loadeddata', () => {
             durationDisplay.textContent = formatTime(video.duration);
@@ -354,10 +372,6 @@
                     resetHideControlsTimeout(); // Reiniciar temporizador al presionar un botón
                 }
             }
-        });
-
-        skipIntroButton.addEventListener('click', () => {
-            video.currentTime = parseInt(skipTimeParam); // Usa el tiempo de saltar de los parámetros
         });
 
         progressContainer.addEventListener('click', (event) => {
@@ -408,22 +422,6 @@
                     toggleFullScreen();
                     break;
             }
-        }
-
-        function showEpisodes() {
-            modalBody.innerHTML = '';
-            for (let i = 1; i <= 10; i++) {
-                const episode = document.createElement('div');
-                episode.className = 'episode';
-                episode.textContent = `Episodio ${i}`;
-                episode.addEventListener('click', () => {
-                    video.src = `${baseURL}video${i}.mp4`; // Cambia la URL del video al episodio seleccionado
-                    video.play(); // Reproduce el episodio
-                    closeModal(); // Cierra la modal
-                });
-                modalBody.appendChild(episode);
-            }
-            modal.classList.add('active');
         }
 
         function closeModal() {
