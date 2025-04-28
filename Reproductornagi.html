@@ -150,7 +150,8 @@
             position: absolute;
             top: 10px;
             right: 20px;
-            background: none; /* Sin fondo */
+            background: #555; /* Fondo plomo */
+            color: white; /* Texto blanco */
             padding: 10px;
             border-radius: 5px;
             cursor: pointer;
@@ -360,10 +361,10 @@
                     // Remover clase activa de todos los botones
                     const allButtons = controls.querySelectorAll('button');
                     allButtons.forEach(btn => btn.classList.remove('button-active'));
-                    
+
                     // Agregar clase activa al botón presionado
                     button.classList.add('button-active');
-                    
+
                     const action = button.dataset.action;
                     if (action) {
                         handleControlAction(action);
