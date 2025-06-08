@@ -1,1 +1,142 @@
-netflixreproductor.html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Reproductor Avanzado</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { margin: 0; background: black; }
+    .controls { transition: opacity 0.3s; }
+    .controls.hidden { opacity: 0; pointer-events: none; }
+    video::-webkit-media-controls { display: none !important; }
+  </style>
+</head>
+<body class="relative w-screen h-screen overflow-hidden text-white">
+
+  <video id="video" class="w-full h-full object-contain bg-black" playsinline></video>
+
+  <div id="controls" class="controls absolute inset-0 flex flex-col justify-between p-4 bg-gradient-to-b from-black/70 to-black/10">
+    <!-- Top -->
+    <div class="flex justify-between items-center">
+      <button onclick="history.back()" class="text-white">
+        <i data-lucide="arrow-left" class="w-6 h-6"></i>
+      </button>
+      <span id="title" class="text-sm font-medium opacity-80"></span>
+      <button>
+        <i data-lucide="cast" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <!-- Center -->
+    <div class="flex justify-center items-center space-x-6">
+      <button onclick="skip(-10)">
+        <i data-lucide="rotate-ccw" class="w-10 h-10"></i>
+        <div class="text-sm text-center -mt-1">10</div>
+      </button>
+      <button onclick="togglePlay()" id="playBtn">
+        <i data-lucide="pause" class="w-12 h-12"></i>
+      </button>
+      <button onclick="skip(10)">
+        <i data-lucide="rotate-cw" class="w-10 h-10"></i>
+        <div class="text-sm text-center -mt-1">10</div>
+      </button>
+    </div>
+
+    <!-- Bottom -->
+    <div>
+      <div class="flex items-center gap-2">
+        <span id="currentTime" class="text-xs">0:00</span>
+        <input type="range" id="progress" class="w-full" min="0" step="0.1" value="0">
+        <span id="duration" class="text-xs">0:00</span>
+      </div>
+      <div class="flex justify-between text-xs pt-2">
+        <button>Speed (1x)</button>
+        <button>Episodes</button>
+        <button>Audio & Subtitles</button>
+        <button>Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+
+    const video = document.getElementById('video');
+    const controls = document.getElementById('controls');
+    const playBtn = document.getElementById('playBtn');
+    const progress = document.getElementById('progress');
+    const currentTime = document.getElementById('currentTime');
+    const duration = document.getElementById('duration');
+    const title = document.getElementById('title');
+
+    function getParam(name) {
+      const url = new URL(window.location);
+      return url.searchParams.get(name);
+    }
+
+    const videoSrc = getParam('link');
+    const videoTitle = getParam('titulo') || 'Reproduciendo';
+    const startTime = parseInt(getParam('tiempo'), 10) || 0;
+    const saveKey = 'video_' + videoSrc;
+
+    video.src = videoSrc;
+    title.textContent = decodeURIComponent(videoTitle);
+
+    video.addEventListener('loadedmetadata', () => {
+      video.currentTime = parseFloat(localStorage.getItem(saveKey)) || startTime;
+      duration.textContent = formatTime(video.duration);
+      progress.max = video.duration;
+    });
+
+    video.addEventListener('timeupdate', () => {
+      currentTime.textContent = formatTime(video.currentTime);
+      progress.value = video.currentTime;
+      localStorage.setItem(saveKey, video.currentTime);
+    });
+
+    progress.addEventListener('input', () => {
+      video.currentTime = progress.value;
+    });
+
+    function formatTime(t) {
+      const m = Math.floor(t / 60);
+      const s = Math.floor(t % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function togglePlay() {
+      if (video.paused) {
+        video.play();
+        playBtn.innerHTML = '<i data-lucide="pause" class="w-12 h-12"></i>';
+      } else {
+        video.pause();
+        playBtn.innerHTML = '<i data-lucide="play" class="w-12 h-12"></i>';
+      }
+      lucide.createIcons();
+    }
+
+    function skip(sec) {
+      video.currentTime += sec;
+    }
+
+    // Ocultar controles después de 3s sin movimiento
+    let hideTimeout;
+    function showControls() {
+      controls.classList.remove('hidden');
+      clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => {
+        controls.classList.add('hidden');
+      }, 3000);
+    }
+
+    document.addEventListener('mousemove', showControls);
+    document.addEventListener('touchstart', showControls);
+    showControls(); // al cargar
+
+    video.play();
+  </script>
+</body>
+</html>
